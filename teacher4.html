@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scratch作品ひろば</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;700&family=Nunito:wght@400;700;800&display=swap');
+:root{
+  --primary:#5b5ef4;
+  --primary-dark:#3b3ec9;
+  --accent:#ff6b6b;
+  --bg:#f5f6ff;
+  --card:#fff;
+  --text:#1f2340;
+  --sub:#7d83aa;
+  --border:#e5e7ff;
+  --success:#19a76f;
+  --radius:20px;
+  --shadow:0 10px 30px rgba(91,94,244,.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito', sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px;}
+
+header{text-align:center;margin-bottom:30px;}
+.logo{font-size:4rem;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+h1{font-family:'Kaisei Decol', serif;color:var(--primary);font-size:2.2rem;margin-bottom:6px;font-weight:700;}
+header p{color:var(--sub);font-size:1rem;font-weight:700;}
+
+.container{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:360px 1fr;gap:30px;}
+@media(max-width:850px){.container{grid-template-columns:1fr;}}
+
+/* 投稿フォーム */
+.form-card{background:var(--card);padding:30px;border-radius:var(--radius);box-shadow:var(--shadow);position:sticky;top:20px;height:fit-content;border:2px solid var(--border);}
+.form-card h2{font-family:'Kaisei Decol', serif;font-size:1.4rem;color:var(--primary);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.input-group{margin-bottom:18px;}
+.input-group label{display:block;font-size:0.9rem;font-weight:800;color:var(--text);margin-bottom:8px;}
+.input-group input, .input-group textarea{width:100%;padding:13px 16px;border:2px solid var(--border);border-radius:12px;font-size:1rem;color:var(--text);font-family:inherit;transition:all .2s;}
+.input-group input:focus, .input-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(91,94,244,0.15);}
+.input-group input::placeholder, .input-group textarea::placeholder{color:#b9bddb;}
+.input-group textarea{resize:none;height:110px;} /* 200文字に合わせて少し高さを拡張 */
+
+#btn-post{width:100%;padding:14px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-size:1.1rem;font-weight:800;cursor:pointer;transition:all .2s;box-shadow:0 4px 12px rgba(91,94,244,0.25);margin-top:10px;}
+#btn-post:hover{background:var(--primary-dark);transform:translateY(-1px);}
+#btn-post:disabled{background:var(--sub);cursor:not-allowed;}
+
+/* メインひろば */
+.main-content{display:flex;flex-direction:column;gap:20px;}
+.section-title{font-family:'Kaisei Decol', serif;font-size:1.5rem;color:var(--text);display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-left:4px;}
+.section-title span{font-size:0.9rem;font-family:'Nunito', sans-serif;background:var(--primary);color:#fff;padding:4px 12px;border-radius:20px;margin-left:10px;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:24px;}
+.no-item{grid-column:1/-1;text-align:center;padding:60px 20px;background:#fff;border-radius:var(--radius);color:var(--sub);font-weight:700;border:2px dashed var(--border);}
+
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border:2px solid var(--border);display:flex;flex-direction:column;transition:transform .2s;cursor:pointer;}
+.card:hover{transform:translateY(-4px);border-color:var(--primary);}
+.iframe-container{width:100%;aspect-ratio:485/402;background:#000;position:relative;pointer-events:none;}
+.iframe-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
+.card-body{padding:20px;display:flex;flex-direction:column;flex-grow:1;position:relative;}
+
+.badge-new{position:absolute;top:-15px;right:20px;background:var(--accent);color:#fff;padding:4px 10px;font-size:0.75rem;font-weight:800;border-radius:8px;box-shadow:0 4px 10px rgba(255,107,107,0.4);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+
+.card-title{font-family:'Kaisei Decol', serif;font-size:1.1rem;color:var(--text);margin-bottom:8px;font-weight:700;line-height:1.4;word-break:break-all;}
+.card-meta{font-size:0.85rem;color:var(--sub);font-weight:700;margin-bottom:15px;display:flex;gap:12px;}
+.card-footer{margin-top:auto;display:flex;justify-content:flex-end;border-top:1px solid var(--border);padding-top:14px;}
+
+.btn-like{background:none;border:2px solid #ffe3e3;padding:6px 14px;border-radius:30px;color:var(--accent);font-size:0.9rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.btn-like.liked{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* 7:3大画面モーダル */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(12,14,28,0.92);backdrop-filter:blur(10px);display:none;justify-content:center;align-items:center;z-index:10000;opacity:0;transition:opacity 0.3s ease;}
+.modal-overlay.show{display:flex;opacity:1;}
+
+.modal-content{
+  background:var(--card);
+  width:95%;
+  max-width:1200px;
+  height:85vh;
+  border-radius:30px;
+  overflow:hidden;
+  box-shadow:0 30px 60px rgba(0,0,0,0.5);
+  position:relative;
+  transform:scale(0.9);
+  transition:transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  display:flex;
+}
+@media(max-width:850px){.modal-content{flex-direction:column;height:95vh;overflow-y:auto;}}
+
+.modal-left{
+  flex: 7;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  position:relative;
+}
+.modal-left iframe{
+  width:100%;
+  height:100%;
+  aspect-ratio: 4/3;
+  border:none;
+}
+
+.modal-right{
+  flex: 3;
+  padding:40px;
+  display:flex;
+  flex-direction:column;
+  background:#fff;
+  border-left:2px solid var(--border);
+  overflow-y:auto;
+}
+@media(max-width:850px){.modal-right{flex:none;border-left:none;border-top:2px solid var(--border);}}
+
+.modal-close{
+  position:absolute;
+  top:20px;
+  right:20px;
+  background:var(--bg);
+  border:none;
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  font-size:1.6rem;
+  cursor:pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:var(--text);
+  z-index:10100;
+  transition:all 0.2s;
+}
+.modal-close:hover{background:var(--accent);color:#fff;transform:rotate(90deg);}
+
+.modal-title{font-family:'Kaisei Decol', serif;font-size:1.8rem;color:var(--primary);margin-bottom:20px;font-weight:700;line-height:1.3;word-break:break-all;}
+.modal-detail-item{margin-bottom:25px;padding-bottom:15px;border-bottom:1px solid var(--border);}
+.modal-label{font-size:0.85rem;font-weight:800;color:var(--sub);margin-bottom:8px;display:block;text-transform:uppercase;letter-spacing:1px;}
+.modal-value{font-size:1.1rem;font-weight:800;color:var(--text);}
+
+.play-hint{
+  background:var(--bg);
+  padding:20px;
+  border-radius:15px;
+  margin-top:15px;
+  font-size:0.95rem;
+  line-height:1.6;
+  color:var(--text);
+  word-break:break-all;
+  white-space:pre-wrap;
+}
+.play-hint strong{color:var(--primary);display:block;margin-bottom:8px;font-size:0.9rem;}
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:#fff;padding:14px 28px;border-radius:30px;font-weight:800;font-size:0.95rem;box-shadow:0 10px 25px rgba(0,0,0,0.15);transition:transform 0.3s;z-index:100000;}
+#toast.show{transform:translateX(-50%) translateY(0);}
+#toast.error{background:var(--accent);}
+#toast.success{background:var(--success);}
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="logo">🚀</div>
+  <h1>Scratch作品ひろば</h1>
+  <p>みんなのアイデアがつまったゲームであそぼう！</p>
+</header>
+
+<div class="container">
+  <div class="form-card">
+    <h2>✨ 作品を投稿する</h2>
+    <div class="input-group">
+      <label for="inp-name">👤 おなまえ</label>
+      <input type="text" id="inp-name" maxlength="20" placeholder="ニックネームでもOK！">
+    </div>
+    <div class="input-group">
+      <label for="inp-title">🎮 タイトル</label>
+      <input type="text" id="inp-title" maxlength="40" placeholder="作品のなまえは？">
+    </div>
+    <div class="input-group">
+      <label for="inp-desc">💡 あそびかた（200もじまで）</label>
+      <textarea id="inp-desc" maxlength="200" placeholder="矢印キーでうごくよ！スペースでジャンプ！など、くわしく書いてもOK！"></textarea>
+    </div>
+    <div class="input-group">
+      <label for="inp-url">🔗 ScratchのURL</label>
+      <input type="url" id="inp-url" placeholder="https://scratch.mit.edu/projects/...">
+    </div>
+    <button id="btn-post">✨ 投稿する</button>
+  </div>
+
+  <div class="main-content">
+    <h2 class="section-title">🌟 みんなの作品ひろば <span id="project-count">0</span></h2>
+    <div class="grid" id="projects-grid">
+      <div class="no-item">読み込み中...</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="game-modal">
+  <div class="modal-content">
+    <button class="modal-close" id="modal-close">×</button>
+    <div class="modal-left" id="modal-game-box"></div>
+    <div class="modal-right">
+      <div class="modal-title" id="modal-game-title">作品タイトル</div>
+      <div class="modal-detail-item">
+        <span class="modal-label">Creator</span>
+        <div class="modal-value" id="modal-game-author">おなまえ</div>
+      </div>
+      <div class="modal-detail-item">
+        <span class="modal-label">Status</span>
+        <div class="modal-value" id="modal-game-likes">💖 0 Likes</div>
+      </div>
+      <div class="play-hint">
+        <strong>💡 あそびかた</strong>
+        <span id="modal-game-desc">あそびかたの説明</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===== Firebase 設定 =====
+const firebaseConfig = {
+  apiKey: "AIzaSyA41uY8WDLrssFN57UHPYGuThBFftrJxAY",
+  authDomain: "scratch-share-a0945.firebaseapp.com",
+  databaseURL: "https://scratch-share-a0945-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "scratch-share-a0945",
+  storageBucket: "scratch-share-a0945.firebasestorage.app",
+  messagingSenderId: "1068366146055",
+  appId: "1:1068366146055:web:637e3a3b076cd3f75ad8a2"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const NG_WORDS = ["ばか","アホ","死ね","ころす","うんこ"];
+let lastPostTime = 0;
+
+function showStatus(msg, type="info") {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.className = "show " + type;
+  setTimeout(() => { toast.className = ""; }, 4000);
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>'"]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[m]));
+}
+
+const modal = document.getElementById("game-modal");
+function closeModal() {
+  modal.classList.remove("show");
+  setTimeout(() => {
+    document.getElementById("modal-game-box").innerHTML = "";
+    modal.style.display = "none";
+  }, 300);
+}
+document.getElementById("modal-close").addEventListener("click", closeModal);
+modal.addEventListener("click", (e) => { if(e.target === modal) closeModal(); });
+
+// 投稿処理
+document.getElementById("btn-post").addEventListener("click", function() {
+  const name = document.getElementById("inp-name").value.trim();
+  const title = document.getElementById("inp-title").value.trim();
+  const desc = document.getElementById("inp-desc").value.trim();
+  const url = document.getElementById("inp-url").value.trim();
+
+  if(!name || !title || !url) { showStatus("⚠️ ぜんぶ入力してね", "error"); return; }
+  
+  const text = name + title + desc;
+  for(let i=0; i<NG_WORDS.length; i++) {
+    if(text.indexOf(NG_WORDS[i]) !== -1) {
+      showStatus("⚠️ つかえない言葉がはいっています。", "error"); return;
+    }
+  }
+
+  const match = url.match(/projects\/([0-9]+)/);
+  if(!match) { showStatus("⚠️ Scratchの正しいURLをいれてね", "error"); return; }
+
+  const btn = document.getElementById("btn-post");
+  btn.disabled = true;
+
+  db.ref("pending").push({
+    name: name, 
+    title: title,
+    description: desc || "（あそびかたの記載はありません）",
+    embedUrl: "https://scratch.mit.edu/projects/" + match[1] + "/embed",
+    postedAt: Date.now()
+  }).then(() => {
+    document.getElementById("inp-name").value = "";
+    document.getElementById("inp-title").value = "";
+    document.getElementById("inp-desc").value = "";
+    document.getElementById("inp-url").value = "";
+    btn.disabled = false;
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    showStatus("🚀 先生におくったよ！OKがでるまで待ってね！", "success");
+  });
+});
+
+// 表示同期
+db.ref("projects").on("value", (snapshot) => {
+  const grid = document.getElementById("projects-grid");
+  const data = snapshot.val();
+  document.getElementById("project-count").textContent = data ? Object.keys(data).length : 0;
+  
+  if(!data) {
+    grid.innerHTML = '<div class="no-item">まだ作品がないよ。最初の投稿をまってるね！</div>';
+    return;
+  }
+  
+  const list = Object.keys(data).map(key => Object.assign({ key: key }, data[key]));
+  list.sort((a, b) => b.postedAt - a.postedAt);
+  
+  grid.innerHTML = "";
+  list.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "card";
+    const likedList = JSON.parse(localStorage.getItem("scratch_liked") || "[]");
+    const isLiked = likedList.includes(p.key);
+    
+    card.innerHTML = `
+      <div class="iframe-container">
+        <iframe src="${p.embedUrl}" scrolling="no" allowfullscreen></iframe>
+      </div>
+      <div class="card-body">
+        ${(Date.now()-p.postedAt < 300000) ? '<div class="badge-new">NEW</div>' : ''}
+        <div class="card-title">${escapeHtml(p.title)}</div>
+        <div class="card-meta"><span>👤 ${escapeHtml(p.name)}</span></div>
+        <div class="card-footer">
+          <button class="btn-like ${isLiked ? 'liked' : ''}" data-key="${p.key}">
+            💖 <span>${p.likes || 0}</span>
+          </button>
+        </div>
+      </div>
+    `;
+    
+    card.addEventListener("click", (e) => {
+      if(e.target.closest('.btn-like')) return;
+      modal.style.display = "flex";
+      setTimeout(() => { modal.classList.add("show"); }, 10);
+      document.getElementById("modal-game-title").textContent = p.title;
+      document.getElementById("modal-game-author").textContent = p.name;
+      document.getElementById("modal-game-likes").textContent = "💖 " + (p.likes || 0) + " Likes";
+      document.getElementById("modal-game-desc").textContent = p.description || "（あそびかたの記載はありません）";
+      document.getElementById("modal-game-box").innerHTML = `
+        <iframe src="${p.embedUrl}" allowtransparency="true" frameborder="0" scrolling="no" allowfullscreen></iframe>
+      `;
+    });
+    
+    card.querySelector(".btn-like").addEventListener("click", function() {
+      const k = this.getAttribute("data-key");
+      let currentLiked = JSON.parse(localStorage.getItem("scratch_liked") || "[]");
+      if(currentLiked.includes(k)) return;
+      
+      db.ref("projects/" + k + "/likes").transaction(c => (c || 0) + 1).then(() => {
+        currentLiked.push(k);
+        localStorage.setItem("scratch_liked", JSON.stringify(currentLiked));
+        this.classList.add("liked");
+        confetti({ particleCount: 40, spread: 60 });
+      });
+    });
+    
+    grid.appendChild(card);
+  });
+});
+</script>
+</body>
+</html>
